@@ -1,0 +1,11 @@
+#Secrets
+.env
+
+# Dataset (too big and not code)
+data/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
