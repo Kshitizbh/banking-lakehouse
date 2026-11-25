@@ -1,6 +1,7 @@
 import csv
 from pathlib import Path
 import hashlib
+from datetime import date
 
 def read_manifest(manifest_path: Path) -> dict[str, dict]:
     """
@@ -35,3 +36,12 @@ def sha256_of_file(file_path: Path, chunk_size: int = 1024 * 1024) -> str:
         while chunk := f.read(chunk_size):
             digest.update(chunk)
     return digest.hexdigest()
+
+def build_landing_key(source: str, ingestion_date: date, file_name: str) -> str:
+    """
+    Build the landing object key, partitioned by Hive-style by source and ingestion date.
+
+    Example: source=transactions/ingestion_Date=2026-11-25/transactions_2026-01-01.csv
+    """
+    ingestion_date_str = ingestion_date.strftime("%Y-%m-%d")
+    return f"source={source}/ingestion_date={ingestion_date_str}/{file_name}"

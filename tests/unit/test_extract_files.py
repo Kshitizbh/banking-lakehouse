@@ -1,7 +1,9 @@
 from pathlib import Path
+from datetime import date
 
 from ingestion.extract_files import read_manifest
 from ingestion.extract_files import sha256_of_file
+from ingestion.extract_files import build_landing_key
 
 def test_read_manifest_converts_paths_and_sizes(tmp_path: Path) -> None:
     # 1. ARRANGE: create a tiny fake manifest in a temporary folder
@@ -33,3 +35,7 @@ def test_sha256_is_same_with_tiny_chunks(tmp_path: Path) -> None:
     sample.write_bytes(b"hello")
     # Reading 2 bytes at a time must give the same fingerprint as reading it all at once
     assert sha256_of_file(sample, chunk_size=2) == sha256_of_file(sample)
+
+def test_build_landing_key_uses_hive_style_partitions() -> None:
+    key = build_landing_key("transactions", date(2026, 11, 25), "transactions_2026-01-01.csv")
+    assert key == "source=transactions/ingestion_date=2026-11-25/transactions_2026-01-01.csv"
