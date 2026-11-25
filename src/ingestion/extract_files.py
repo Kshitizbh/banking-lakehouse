@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+import hashlib
 
 def read_manifest(manifest_path: Path) -> dict[str, dict]:
     """
@@ -17,3 +18,20 @@ def read_manifest(manifest_path: Path) -> dict[str, dict]:
                 "sha256": row["sha256"],
             }
     return manifest
+
+def sha256_of_file(file_path: Path, chunk_size: int = 1024 * 1024) -> str:
+    """
+    Returns the SHA-256 fingerprint of a file as hex text, reading it in chunks.
+
+    Args:
+        file_path: Path to the file.
+        chunk_size: Size of chunks to read at a time (default: 1MB).
+
+    Returns:
+        The SHA256 hash as a hexadecimal string.
+    """
+    digest = hashlib.sha256()
+    with file_path.open("rb") as f:
+        while chunk := f.read(chunk_size):
+            digest.update(chunk)
+    return digest.hexdigest()
